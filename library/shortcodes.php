@@ -78,7 +78,7 @@ function theme_rss_title() {
 }
 
 function theme_template_url() {
-	return get_bloginfo('template_url', 'display');
+	return get_template_directory_uri();
 }
 function theme_post_link($atts) {
 	$atts = shortcode_atts(array(

@@ -6,11 +6,9 @@ if (isset($wp_locale)) {
 <html <?php language_attributes(); ?>>
 <head>
 <meta charset="<?php bloginfo('charset') ?>" />
-<title><?php wp_title('|', true, 'right'); bloginfo('name'); ?></title>
 <meta name="viewport" content="initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no, width = device-width">
-<!--[if lt IE 9]><script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
-<link rel="stylesheet" href="<?php bloginfo('stylesheet_url') ?>" media="screen" />
+<link rel="stylesheet" href="<?php echo esc_url(get_stylesheet_uri()); ?>" media="screen" />
 <link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
 <?php
 remove_action('wp_head', 'wp_generator');

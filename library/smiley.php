@@ -81,7 +81,7 @@ function theme_get_smilies() {
 	);
 	$result = '';
 	foreach ($smilies as $tag => $icon) {
-		$result .= '<a href="javascript:grin(\'' . $tag . '\')"><img class="wp-smiley" src="' . get_bloginfo("wpurl") . '/wp-includes/images/smilies/' . $icon . '" alt="" /></a>';
+		$result .= '<a href="javascript:grin(\'' . $tag . '\')"><img class="wp-smiley" src="' . site_url() . '/wp-includes/images/smilies/' . $icon . '" alt="" /></a>';
 	}
 	return $result;
 }

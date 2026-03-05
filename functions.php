@@ -17,36 +17,6 @@ if (function_exists('mb_regex_encoding')) {
 	mb_regex_encoding(get_bloginfo('charset'));
 }
 
-if (WP_VERSION < 3.0) {
-	add_action('admin_notices', 'theme_unsupported_version_notice1');
-	add_action('wp_head', 'theme_unsupported_version_notice2');
-	function theme_unsupported_version_notice1() {
-		?>
-		<div id='theme-warning' class='error fade'><p><strong><?php _e('Current theme requires WordPress 3.0 or higher.', THEME_NS); ?></strong>
-		<?php
-		echo sprintf(__('Please <a href="%s">upgrade WordPress</a>, or <a href="%s">use an earlier version of Artisteer (2.6 - 3.1)</a> to create themes for WordPress 2.6-2.9.', THEME_NS),
-			'http://codex.wordpress.org/Upgrading_WordPress', 'http://www.artisteer.com/Default.aspx?p=license_info');
-		?>
-		</p></div>
-		<?php
-	}
-	function theme_unsupported_version_notice2() {
-		?>
-		</head>
-		<body>
-		<strong><?php _e('Current theme requires WordPress 3.0 or higher.', THEME_NS); ?></strong>
-		<?php
-		echo sprintf(__('Please <a href="%s">upgrade WordPress</a>, or <a href="%s">use an earlier version of Artisteer (2.6 - 3.1)</a> to create themes for WordPress 2.6-2.9.', THEME_NS),
-			'http://codex.wordpress.org/Upgrading_WordPress', 'http://www.artisteer.com/Default.aspx?p=license_info');
-		?>
-		</body>
-		</html>
-		<?php
-		die();
-	}
-	return;
-}
-
 theme_include_lib('defaults.php');
 theme_include_lib('misc.php');
 theme_include_lib('wrappers.php');
@@ -57,7 +27,7 @@ theme_include_lib('widgets.php');
 
 function theme_favicon() {
 	if (is_file(get_template_directory() . '/favicon.ico')):
-		?><link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/favicon.ico" /><?php
+		?><link rel="shortcut icon" href="<?php echo esc_url(get_template_directory_uri()); ?>/favicon.ico" /><?php
 	endif;
 }
 
@@ -66,7 +36,6 @@ add_action('wp_head', 'theme_favicon');
 add_action('wp_head', 'theme_update_page_meta');
 add_action('wp_enqueue_scripts', 'theme_update_scripts', 1000);
 add_action('wp_enqueue_scripts', 'theme_update_styles', 1000);
-add_action('wp_print_scripts', 'theme_update_jquery_scripts', 1000);
 add_action('wp_head', 'theme_update_posts_styles', 1000);
 add_action('wp_head', 'theme_header_image_script');
 add_action('admin_head', 'theme_favicon');
@@ -87,6 +56,8 @@ add_theme_support('post-thumbnails');
 add_theme_support('nav-menus');
 add_theme_support('automatic-feed-links');
 add_theme_support('post-formats', array('aside', 'gallery'));
+add_theme_support('title-tag');
+add_theme_support('html5', array('search-form', 'comment-form', 'comment-list', 'gallery', 'caption'));
 
 
 function theme_header_image_script() {
@@ -164,36 +135,19 @@ if (is_admin()) {
 }
 
 function theme_update_scripts() {
-	global $wp_scripts;
-	wp_register_script('jquery_migrate', get_bloginfo('template_url', 'display') . '/jquery-migrate-1.1.1.js', array('jquery'));
-	wp_enqueue_script('jquery_migrate');
-	wp_register_script("script.js", get_bloginfo('template_url', 'display') . '/script.js', array('jquery'));
+	wp_register_script("script.js", get_template_directory_uri() . '/script.js', array('jquery'));
 	wp_enqueue_script("script.js");
-	wp_register_script("script.responsive.js", get_bloginfo('template_url', 'display') . '/script.responsive.js', array('jquery'));
+	wp_register_script("script.responsive.js", get_template_directory_uri() . '/script.responsive.js', array('jquery'));
 	wp_enqueue_script("script.responsive.js");
-
-}
-
-function theme_update_jquery_scripts() {
-	if(is_admin()) {
-		return;
-	}
-	wp_deregister_script('jquery');
-	if (theme_get_option('theme_include_scripts_from_cdn')) {
-		wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js');
-	} else {
-		wp_register_script('jquery', get_bloginfo('template_url', 'display') . '/jquery.js');
-	}
 }
 
 function theme_update_styles() {
 	global $wp_styles;
-	wp_register_style("style.ie7.css", get_bloginfo('template_url', 'display') . '/style.ie7.css', array(), false, "screen");
+	wp_register_style("style.ie7.css", get_template_directory_uri() . '/style.ie7.css', array(), false, "screen");
 	wp_enqueue_style("style.ie7.css");
 	$wp_styles->add_data("style.ie7.css", "conditional", "lte IE 7");
-	wp_register_style("style.responsive.css", get_bloginfo('template_url', 'display') . '/style.responsive.css', array(), false, "all");
+	wp_register_style("style.responsive.css", get_template_directory_uri() . '/style.responsive.css', array(), false, "all");
 	wp_enqueue_style("style.responsive.css");
-
 }
 
 function theme_update_title($title, $sep, $seplocation) {
@@ -702,7 +656,7 @@ function theme_get_adjacent_post_link($format, $link, $in_same_cat = false, $exc
 	if (theme_get_option('theme_single_navigation_trim_title')) {
 		$short_title = theme_trim_long_str($title, theme_get_option('theme_single_navigation_trim_len'));
 	}
-	$date = mysql2date(get_option('date_format'), $post->post_date);
+	$date = get_the_date('', $post);
 	$rel = $previous ? 'prev' : 'next';
 
 	$string = '<a href="' . get_permalink($post) . '" title="' . esc_attr($title) . '" rel="' . $rel . '">';

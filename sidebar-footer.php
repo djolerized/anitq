@@ -69,7 +69,7 @@ echo do_shortcode(theme_get_option('theme_override_default_footer_content') ? th
     <div class="content-layout-row">
     <div class="layout-cell layout-item-1" style="width: 100%"><?php if (false === theme_print_sidebar('footer-1-widget-area')) { ?>
         <p>Copyright © 2006 - 
-        <script language="JavaScript" type="text/javascript">
+        <script type="text/javascript">
             now = new Date
             theYear=now.getYear()
             if (theYear < 1900)

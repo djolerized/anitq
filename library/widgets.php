@@ -160,7 +160,7 @@ class VMenuWidget extends WP_Widget {
 		$nav_menu = $instance['nav_menu'];
 
 		// Get menus
-		$menus = get_terms('nav_menu', array('hide_empty' => false));
+		$menus = get_terms(array('taxonomy' => 'nav_menu', 'hide_empty' => false));
 		$sources = array('Pages', 'Categories', 'Custom Menu');
 		?>
 		<p>

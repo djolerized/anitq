@@ -221,7 +221,7 @@ function theme_custom_header_form_url($form_action_url, $type) {
 
 function theme_header_image_script_control() {
 	global $pagenow;
-	if (('media-upload.php' != $pagenow && 'async-upload.php' != $pagenow) || 'image_header' !== $_GET['type']) {
+	if (('media-upload.php' != $pagenow && 'async-upload.php' != $pagenow) || !isset($_GET['type']) || 'image_header' !== $_GET['type']) {
 		return;
 	}
 	add_filter('media_upload_form_url', 'theme_custom_header_form_url', 10, 2);

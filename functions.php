@@ -7,7 +7,7 @@ define('THEME_LANGS_FOLDER', '/languages');
 if (class_exists('xili_language')) {
 	define('THEME_TEXTDOMAIN', THEME_NS);
 } else {
-	load_theme_textdomain(THEME_NS, TEMPLATEPATH . THEME_LANGS_FOLDER);
+	load_theme_textdomain(THEME_NS, get_template_directory() . THEME_LANGS_FOLDER);
 }
 
 if (function_exists('mb_internal_encoding')) {
@@ -56,7 +56,7 @@ theme_include_lib('shortcodes.php');
 theme_include_lib('widgets.php');
 
 function theme_favicon() {
-	if (is_file(TEMPLATEPATH . '/favicon.ico')):
+	if (is_file(get_template_directory() . '/favicon.ico')):
 		?><link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/favicon.ico" /><?php
 	endif;
 }
@@ -157,8 +157,8 @@ if (is_admin()) {
 	add_action('add_meta_boxes', 'theme_add_meta_boxes');
 	add_action('save_post', 'theme_save_post');
 
-	if (file_exists(TEMPLATEPATH . '/content/content-importer.php')) {
-		include(TEMPLATEPATH . '/content/content-importer.php');
+	if (file_exists(get_template_directory() . '/content/content-importer.php')) {
+		include(get_template_directory() . '/content/content-importer.php');
 	}
 	return;
 }
@@ -573,7 +573,9 @@ function theme_404_content($args = '') {
 		'focus_script' => '<script type="text/javascript">jQuery(\'div.content input[name="s"]\').focus();</script>'
 			)
 	);
-	extract($args);
+	$error_title = $args['error_title'];
+	$error_message = $args['error_message'];
+	$focus_script = $args['focus_script'];
 	theme_post_wrapper(
 			array(
 				'title' => $error_title,
@@ -683,7 +685,7 @@ function theme_get_next_image_link($size = 'thumbnail', $text = false) {
 
 function theme_get_adjacent_post_link($format, $link, $in_same_cat = false, $excluded_categories = '', $previous = true) {
 	if ($previous && is_attachment())
-		$post = & get_post($GLOBALS['post']->post_parent);
+		$post = get_post($GLOBALS['post']->post_parent);
 	else
 		$post = get_adjacent_post($in_same_cat, $excluded_categories, $previous);
 
@@ -782,7 +784,11 @@ function theme_get_avatar($args = '') {
 		$default = get_template_directory_uri() . '/images/no-avatar.jpg';
 	}
 	$args = wp_parse_args($args, array('id' => false, 'size' => 96, 'default' => $default, 'alt' => false, 'url' => false));
-	extract($args);
+	$id = $args['id'];
+	$size = $args['size'];
+	$default = $args['default'];
+	$alt = $args['alt'];
+	$url = $args['url'];
 	$result = get_avatar($id, $size, $default, $alt);
 	if ($result) {
 		if ($url) {
@@ -828,7 +834,7 @@ function theme_ob_handler($str) {
 }
 
 function theme_ob_start() {
-  ob_flush();
+  if (ob_get_level() > 0) { ob_flush(); }
 	global $theme_ob_stack;
 	array_push($theme_ob_stack, array('buffer' => '', 'level' => ob_get_level()));
 	ob_start('theme_ob_handler');

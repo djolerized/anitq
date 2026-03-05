@@ -32,7 +32,7 @@ if ($images) {
 		<a class="size-thumbnail" href="<?php the_permalink(); ?>"><?php echo $image_img_tag; ?></a>
 	</div><!-- .gallery-thumb -->
 		<p><em><?php printf( _n( 'This gallery contains <a %1$s>%2$s photo</a>.', 'This gallery contains <a %1$s>%2$s photos</a>.', $total_images, THEME_NS ),
-				'href="' . get_permalink() . '" title="' . sprintf( esc_attr__( 'Permalink to %s', THEME_NS ), strip_tags(the_title_attribute( 'echo=0' )) ) . '" rel="bookmark"',
+				'href="' . get_permalink() . '" title="' . sprintf( esc_attr__( 'Permalink to %s', THEME_NS ), strip_tags((string) the_title_attribute( 'echo=0' )) ) . '" rel="bookmark"',
 				number_format_i18n( $total_images )
 			); ?></em>
 	</p>
@@ -43,7 +43,7 @@ if ($images) {
 				array(
 					'id' => theme_get_post_id(),
 					'class' => theme_get_post_class(),
-					'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>',
+					'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags((string) get_the_title()) . '">' . get_the_title() . '</a>',
 					'heading' => theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_article_title_tag'),
 					'before' => theme_get_metadata_icons('', 'header'),
 					'content' => theme_ob_get_clean(),

@@ -187,7 +187,8 @@ function theme_print_meta_box($post_id, $meta_options) {
 		$id = theme_get_array_value($option, 'id');
 		$name = theme_get_array_value($option, 'name');
 		$desc = theme_get_array_value($option, 'desc');
-		if(strpos($post_id, '-') === false) {
+		// PHP8 FIX: Cast $post_id to string for strpos null safety
+		if(strpos((string) $post_id, '-') === false) {
 			$value = theme_get_meta_option($post_id, $id);
 		} else {
 			$value = theme_get_widget_meta_option($post_id, $id);
@@ -348,10 +349,11 @@ function theme_save_post($post_id) {
 		$meta_options = $theme_post_meta_options;
 	}
 
-	$meta_options = array_merge($meta_options, $theme_page_header_image_meta_options);
-
-	if (!$meta_options)
+	// PHP8 FIX: $meta_options can be null; array_merge requires arrays
+	if (!is_array($meta_options))
 		return $post_id;
+
+	$meta_options = array_merge($meta_options, $theme_page_header_image_meta_options);
 	// OK, we're authenticated: we need to find and save the data
 	foreach ($meta_options as $value) {
 		$id = theme_get_array_value($value, 'id');

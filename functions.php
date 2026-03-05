@@ -17,7 +17,8 @@ if (function_exists('mb_regex_encoding')) {
 	mb_regex_encoding(get_bloginfo('charset'));
 }
 
-if (WP_VERSION < 3.0) {
+// PHP8 FIX: Use version_compare instead of loose string-to-int comparison
+if (version_compare(WP_VERSION, '3.0', '<')) {
 	add_action('admin_notices', 'theme_unsupported_version_notice1');
 	add_action('wp_head', 'theme_unsupported_version_notice2');
 	function theme_unsupported_version_notice1() {
@@ -95,7 +96,7 @@ function theme_header_image_script() {
 		?>
 		<style>
 			.header {
-				background-image : url(<?php echo $theme_header_image; ?>);
+				background-image : url(<?php echo esc_url($theme_header_image); ?>);
 				background-position : center center;
 			}
 		</style>
@@ -218,11 +219,11 @@ function theme_update_page_meta() {
     }
     $description = get_post_meta($post_id, 'page_description', true);
     if (!empty($description)) {
-        $res .= "<meta name=\"description\" content=\"$description\">\n";
+        $res .= "<meta name=\"description\" content=\"" . esc_attr((string) $description) . "\">\n";
     }
     $keywords = get_post_meta($post_id, 'page_keywords', true);
     if (!empty($keywords)) {
-        $res .= "<meta name=\"keywords\" content=\"$keywords\">\n";
+        $res .= "<meta name=\"keywords\" content=\"" . esc_attr((string) $keywords) . "\">\n";
     }
     $metaTags = get_post_meta($post_id, 'page_metaTags', true);
     if (!empty($metaTags)) {
@@ -343,9 +344,10 @@ function theme_get_post_id() {
 	return $post_id;
 }
 
+// PHP8 FIX: Add null check for $post to prevent error on null access
 function theme_get_the_ID() {
 	global $post;
-	return $post->ID;
+	return $post ? $post->ID : 0;
 }
 
 function theme_get_post_class() {
@@ -692,7 +694,8 @@ function theme_get_adjacent_post_link($format, $link, $in_same_cat = false, $exc
 	if (!$post)
 		return;
 
-	$title = strip_tags($post->post_title);
+	// PHP8 FIX: Cast to string for strip_tags null safety
+	$title = strip_tags((string) $post->post_title);
 
 	if (empty($post->post_title))
 		$title = $previous ? __('Previous Post', THEME_NS) : __('Next Post', THEME_NS);
@@ -826,8 +829,12 @@ function theme_get_next_post() {
 
 $theme_ob_stack = array();
 
+// PHP8 FIX: Add empty stack check to prevent null key access
 function theme_ob_handler($str) {
 	global $theme_ob_stack;
+	if (empty($theme_ob_stack)) {
+		return '';
+	}
 	end($theme_ob_stack);
 	$theme_ob_stack[key($theme_ob_stack)]['buffer'] .= $str;
 	return '';
@@ -840,13 +847,17 @@ function theme_ob_start() {
 	ob_start('theme_ob_handler');
 }
 
+// PHP8 FIX: Add empty stack check to prevent null key access
 function theme_ob_get_clean() {
 	global $theme_ob_stack;
-  end($theme_ob_stack);
+	if (empty($theme_ob_stack)) {
+		return '';
+	}
+	end($theme_ob_stack);
 	$data = &$theme_ob_stack[key($theme_ob_stack)];
 	while ( ob_get_level() > $data['level']) {
-    ob_end_flush();
-  }
-  array_pop($theme_ob_stack);
+		ob_end_flush();
+	}
+	array_pop($theme_ob_stack);
 	return $data['buffer'];
 }

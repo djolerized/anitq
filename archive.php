@@ -14,7 +14,8 @@ get_header(); ?>
 			<?php
 			if (have_posts()) {
 				global $posts;
-				$post = $posts[0];
+				// PHP8 FIX: Check array not empty before access (undefined key error in PHP 8.0+)
+				$post = !empty($posts) ? $posts[0] : null;
 				theme_ob_start();
 
 				if (is_category()) {

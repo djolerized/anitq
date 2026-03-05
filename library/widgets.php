@@ -51,7 +51,8 @@ function theme_update_widget_additional($instance) {
 	global $theme_widget_meta_options;
 	foreach ($theme_widget_meta_options as $value) {
 		$id = theme_get_array_value($value, 'id');
-		$val = stripslashes(theme_get_array_value($_POST, $id));
+		// PHP8 FIX: Ensure non-null string for stripslashes
+		$val = stripslashes((string) theme_get_array_value($_POST, $id, ''));
 		$type = theme_get_array_value($value, 'type');
 		$options = theme_get_array_value($value, 'options');
 		switch ($type) {
@@ -146,7 +147,7 @@ class VMenuWidget extends WP_Widget {
 	}
 
 	function update($new_instance, $old_instance) {
-		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['title'] = strip_tags((string) ($new_instance['title'] ?? ''));
 		$instance['source'] = $new_instance['source'];
 		$instance['nav_menu'] = (int) $new_instance['nav_menu'];
 		return $instance;
@@ -240,7 +241,8 @@ class LoginWidget extends WP_Widget {
 					<p id="form-login-username">
 						<label for="log"><?php _e('Username', THEME_NS) ?></label>
 						<br>
-						<input type="text" name="log" id="log" value="<?php echo esc_attr(stripslashes($user_login), 1) ?>" size="20" />
+						<!-- PHP8 FIX: esc_attr() takes only 1 parameter; $user_login may be null -->
+					<input type="text" name="log" id="log" value="<?php echo esc_attr(stripslashes((string) $user_login)) ?>" size="20" />
 					</p>
 					<p id="form-login-password">
 						<label for="pwd"><?php _e("Password", THEME_NS); ?></label>

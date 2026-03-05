@@ -62,6 +62,8 @@ function theme_get_list_menu($args = array()) {
 		}
 	}
 
+	// PHP8 FIX: Initialize $activeIDs array before use (undefined variable error in PHP 8.0+)
+	$activeIDs = array();
 	$current_ID = $active_ID;
 	while ($current_ID && isset($IdToKey[$current_ID])) {
 		$activeIDs[] = $current_ID;
@@ -85,7 +87,7 @@ function theme_get_list_menu($args = array()) {
 					'id' => $id,
 					'active' => $active,
 					'attr' => array(
-						'title' => strip_tags(empty($el->attr_title) ? $title : $el->attr_title),
+						'title' => strip_tags((string) (empty($el->attr_title) ? $title : $el->attr_title)),
 						'target' => $el->target,
 						'rel' => $el->xfn,
 						'href' => $el->url,
@@ -166,7 +168,7 @@ function theme_get_list_pages($args = array()) {
 		$items[] = new theme_MenuItem(array(
 					'id' => 'home',
 					'active' => $active,
-					'attr' => array('class' => ($active ? 'active' : ''), 'href' => get_home_url(), 'title' => strip_tags($title)),
+					'attr' => array('class' => ($active ? 'active' : ''), 'href' => get_home_url(), 'title' => strip_tags((string) $title)),
 					'title' => $title,
 				));
 	}
@@ -182,7 +184,7 @@ function theme_get_list_pages($args = array()) {
 		$items[] = new theme_MenuItem(array(
 					'id' => $id,
 					'active' => $active,
-					'attr' => array('class' => ($active ? 'active' : ''), 'href' => $href, 'title' => strip_tags($title)),
+					'attr' => array('class' => ($active ? 'active' : ''), 'href' => $href, 'title' => strip_tags((string) $title)),
 					'title' => $title,
 					'parent' => $page->post_parent
 				));
@@ -224,7 +226,7 @@ function theme_get_list_categories($args = array()) {
 		$items[] = new theme_MenuItem(array(
 					'id' => $id,
 					'active' => $active,
-					'attr' => array('class' => ($active ? 'active' : ''), 'href' => get_category_link($id), 'title' => strip_tags($desc)),
+					'attr' => array('class' => ($active ? 'active' : ''), 'href' => get_category_link($id), 'title' => strip_tags((string) $desc)),
 					'title' => $title,
 					'parent' => $category->parent
 				));
@@ -271,9 +273,11 @@ class theme_MenuItem {
 
 	function get_start($level) {
 		$class = theme_get_array_value($this->attr, 'class', '');
-		$class = 'menu-item-' . $this->id . (strlen($class) > 0 ? ' ' : '') . $class;
+		// PHP8 FIX: Cast $class to string for strlen null safety
+		$class = 'menu-item-' . $this->id . (strlen((string) $class) > 0 ? ' ' : '') . $class;
 		$this->attr['class'] = ($this->active ? 'active' : null);
-		$title = strip_tags(apply_filters('the_title', $this->title, $this->id));
+		// PHP8 FIX: Cast to string for strip_tags null safety
+		$title = strip_tags((string) apply_filters('the_title', $this->title, $this->id));
 		if (theme_get_option('theme_menu_trim_title')) {
 			$title = theme_trim_long_str($title, theme_get_option($level == 0 ? 'theme_menu_trim_len' : 'theme_submenu_trim_len'));
 		}

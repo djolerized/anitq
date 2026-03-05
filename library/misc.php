@@ -1,13 +1,18 @@
 <?php
 
+// PHP8 FIX: Cast to string to prevent null deprecation in PHP 8.1+
 function theme_strlen($str) {
+	$str = (string) $str;
 	if (function_exists('mb_strlen')) {
 		return mb_strlen($str);
 	}
 	return strlen($str);
 }
 
+// PHP8 FIX: Cast to string to prevent null deprecation in PHP 8.1+
 function theme_strpos($source, $target) {
+	$source = (string) $source;
+	$target = (string) $target;
 	if (function_exists('mb_strpos')) {
 		return mb_strpos($source, $target);
 	}
@@ -26,8 +31,9 @@ function theme_is_empty_html($str) {
 }
 
 
+// PHP8 FIX: Cast $id to string for null safety
 function theme_is_vmenu_widget($id) {
-	return (strpos($id, 'vmenu') !== false);
+	return (strpos((string) $id, 'vmenu') !== false);
 }
 
 
@@ -43,16 +49,18 @@ function theme_trim_long_str($str, $len = 50, $sep = ' ') {
 	return $str;
 }
 
+// PHP8 FIX: Use null coalescing for $_SERVER values that may be unset
 function theme_get_current_url() {
 	$pageURL = 'http';
 	if (is_ssl()) {
 		$pageURL .= 's';
 	}
-	$pageURL .= '://' . $_SERVER['SERVER_NAME'];
-	if ($_SERVER['SERVER_PORT'] != '80') {
-		$pageURL .= ':' . $_SERVER["SERVER_PORT"];
+	$pageURL .= '://' . ($_SERVER['SERVER_NAME'] ?? '');
+	$port = $_SERVER['SERVER_PORT'] ?? '80';
+	if ($port != '80') {
+		$pageURL .= ':' . $port;
 	}
-	$pageURL .= $_SERVER["REQUEST_URI"];
+	$pageURL .= ($_SERVER['REQUEST_URI'] ?? '');
 	return $pageURL;
 }
 
@@ -64,7 +72,9 @@ function theme_remove_last_slash($url) {
 	return $url;
 }
 
+// PHP8 FIX: Cast $url to string for null safety
 function theme_is_current_url($url) {
+	$url = (string) $url;
 	// remove # anchor
 	if (strpos($url, '#')) {
 		$url = substr($url, 0, strpos($url, '#'));
@@ -85,7 +95,7 @@ function theme_prepare_attr($attr = array()) {
 	foreach ($attr as $name => $value) {
 		if (empty($name) || empty($value))
 			continue;
-		$result .= ' ' . strtolower($name) . '="' . esc_attr($value) . '"';
+		$result .= ' ' . strtolower((string) $name) . '="' . esc_attr((string) $value) . '"';
 	}
 	return $result;
 }
@@ -164,9 +174,12 @@ function theme_highlight_excerpt($search_query, $text) {
 
 	// Now we collapse overlapping text ranges into one. The sorting makes
 	// it O(n).
+	// PHP8 FIX: Initialize $from1 and $to1 to avoid undefined variable warnings
 	$newranges = array();
+	$from1 = null;
+	$to1 = null;
 	foreach ($ranges as $from2 => $to2) {
-		if (!isset($from1)) {
+		if ($from1 === null) {
 			$from1 = $from2;
 			$to1 = $to2;
 			continue;

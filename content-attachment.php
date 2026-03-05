@@ -23,7 +23,7 @@
 global $post;
 /* Display navigation to next/previous pages when applicable */
 if (!empty($post->post_parent)) {
-	$return_link = '<a href="' . get_permalink($post->post_parent) . '" title="' . esc_attr(sprintf(__('Return to %s', THEME_NS), strip_tags(get_the_title($post->post_parent)))) . '" rel="gallery">'
+	$return_link = '<a href="' . get_permalink($post->post_parent) . '" title="' . esc_attr(sprintf(__('Return to %s', THEME_NS), strip_tags((string) get_the_title($post->post_parent)))) . '" rel="gallery">'
 			. sprintf(__('<span class="meta-nav">&larr;</span> %s', THEME_NS), get_the_title($post->post_parent)) . '</a>';
 	theme_post_navigation(array('next_link' => $return_link));
 }
@@ -52,7 +52,7 @@ if (wp_attachment_is_image()) {
 	}
 	?>
 	<p class="attachment center">
-		<a href="<?php echo $next_attachment_url; ?>" title="<?php echo esc_attr(strip_tags(get_the_title())); ?>" rel="attachment">
+		<a href="<?php echo $next_attachment_url; ?>" title="<?php echo esc_attr(strip_tags((string) get_the_title())); ?>" rel="attachment">
 			<?php
 			$attachment_size = apply_filters('attachment_size', 600);
 			echo wp_get_attachment_image($post->ID, array($attachment_size, 9999)); // filterable image width with, essentially, no limit for image height.
@@ -63,7 +63,7 @@ if (wp_attachment_is_image()) {
 } else {
 	?>
 	<p class="attachment center">
-		<a href="<?php echo wp_get_attachment_url(); ?>" title="<?php echo esc_attr(strip_tags(get_the_title())); ?>" rel="attachment">
+		<a href="<?php echo wp_get_attachment_url(); ?>" title="<?php echo esc_attr(strip_tags((string) get_the_title())); ?>" rel="attachment">
 			<?php echo basename(get_permalink()); ?>
 		</a>
 	</p>
@@ -74,6 +74,8 @@ echo theme_get_content();
 
 if (wp_attachment_is_image()) {
 	$metadata = wp_get_attachment_metadata();
+	// PHP8 FIX: wp_get_attachment_metadata() can return false; check before array access
+	if ($metadata && isset($metadata['width'], $metadata['height'])) {
 				echo '<p class="center">' . sprintf( __( 'Full size is %s pixels', THEME_NS),
 					sprintf( '<a href="%1$s" title="%2$s">%3$s &times; %4$s</a>',
 						wp_get_attachment_url(),
@@ -82,6 +84,7 @@ if (wp_attachment_is_image()) {
 						$metadata['height']
 					)
 	) . '</p>';
+	}
 }
 
 /* Display navigation to next/previous pages when applicable */
@@ -91,7 +94,7 @@ theme_post_wrapper(
 		array(
 			'id' => theme_get_post_id(),
 			'class' => theme_get_post_class(),
-			'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>',
+			'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags((string) get_the_title()) . '">' . get_the_title() . '</a>',
 			'heading' => theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_article_title_tag'),
 			'before' => theme_get_metadata_icons('date,author,edit', 'header'),
 			'content' => theme_ob_get_clean(),

@@ -26,7 +26,7 @@ theme_post_wrapper(
 			'id' => theme_get_post_id(),
 			'class' => theme_get_post_class(),
 			'thumbnail' => theme_get_post_thumbnail(),
-			'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>',
+			'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags((string) get_the_title()) . '">' . get_the_title() . '</a>',
 			'heading' => theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_article_title_tag'),
 			'before' => theme_get_metadata_icons('', 'header'),
 			'content' => theme_get_excerpt(),

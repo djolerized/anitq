@@ -63,7 +63,9 @@ function theme_is_displayed_widget($widget) {
 
 function theme_get_dynamic_sidebar_data($sidebar_id) {
     global $theme_widget_args, $theme_sidebars;
-    $sidebar_style = theme_get_option('theme_sidebars_style_' . $theme_sidebars[$sidebar_id]['group']);
+    // PHP8 FIX: Check if sidebar_id exists in array before accessing
+    $sidebar_group = isset($theme_sidebars[$sidebar_id]) ? $theme_sidebars[$sidebar_id]['group'] : 'default';
+    $sidebar_style = theme_get_option('theme_sidebars_style_' . $sidebar_group);
     theme_ob_start();
     $success = dynamic_sidebar($sidebar_id);
     $content = theme_ob_get_clean();

@@ -19,11 +19,14 @@ function theme_subscribe_rss() {
 
 // ads
 function theme_advertisement($atts) {
-	extract(shortcode_atts(array(
+	$atts = shortcode_atts(array(
 				'code' => 1,
 				'align' => 'left',
 				'inline' => 0
-					), $atts));
+					), $atts);
+	$code = $atts['code'];
+	$align = $atts['align'];
+	$inline = $atts['inline'];
 	$ad = theme_get_option('theme_ad_code_' . $code);
 	if (!empty($ad)):
 		$ad = '<div class="ad align' . esc_attr($align) . '">' . $ad . '</div>';
@@ -78,9 +81,10 @@ function theme_template_url() {
 	return get_bloginfo('template_url', 'display');
 }
 function theme_post_link($atts) {
-	extract(shortcode_atts(array(
+	$atts = shortcode_atts(array(
 		'name' => '/'
-	), $atts));
+	), $atts);
+	$name = $atts['name'];
 	$raw_name = $name;
 	$type = 'page';
 	if(strpos($name, '/Blog%20Posts/') === 0) {
@@ -101,9 +105,10 @@ function theme_search() {
 }
 
 function theme_collage($atts) {
-	extract(shortcode_atts(array(
+	$atts = shortcode_atts(array(
 		'id' => ''
-	), $atts));
+	), $atts);
+	$id = $atts['id'];
 	$page_id = get_queried_object_id();
 	$collages = get_post_meta($page_id, 'theme_collages', true);
 	return $collages[$id];

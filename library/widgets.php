@@ -63,7 +63,8 @@ function theme_update_widget_additional($instance) {
 				break;
 			case 'select':
 				if (!in_array($val, array_keys($options))) {
-					$val = reset(array_keys($options));
+					$keys = array_keys($options);
+					$val = reset($keys);
 				}
 				break;
 		}
@@ -122,13 +123,16 @@ function theme_widget_extra_control() {
 
 class VMenuWidget extends WP_Widget {
 
-	function VMenuWidget() {
+	function __construct() {
 		$widget_ops = array('classname' => 'vmenu', 'description' => __('Use this widget to add one of your custom menus as a widget.', THEME_NS));
-		parent::WP_Widget(false, __('Vertical Menu', THEME_NS), $widget_ops);
+		parent::__construct('vmenu', __('Vertical Menu', THEME_NS), $widget_ops);
 	}
 
 	function widget($args, $instance) {
-		extract($args);
+		$before_widget = $args['before_widget'];
+		$after_widget = $args['after_widget'];
+		$before_title = $args['before_title'];
+		$after_title = $args['after_title'];
 		$title = apply_filters('widget_title', $instance['title'], $instance, $this->id_base);
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
@@ -201,14 +205,17 @@ class VMenuWidget extends WP_Widget {
 
 class LoginWidget extends WP_Widget {
 
-	function LoginWidget() {
+	function __construct() {
 		$widget_ops = array('classname' => 'login', 'description' => __('Login form', THEME_NS));
-		$this->WP_Widget(false, __('Login', THEME_NS), $widget_ops);
+		parent::__construct('login', __('Login', THEME_NS), $widget_ops);
 	}
 
 	function widget($args, $instance) {
 		global $user_ID, $user_identity, $user_level, $user_email, $user_login;
-		extract($args);
+		$before_widget = $args['before_widget'];
+		$after_widget = $args['after_widget'];
+		$before_title = $args['before_title'];
+		$after_title = $args['after_title'];
 		echo $before_widget;
 		echo $before_title;
 		if ($user_ID):

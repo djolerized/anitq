@@ -69,7 +69,10 @@ function theme_get_dynamic_sidebar_data($sidebar_id) {
     $content = theme_ob_get_clean();
     if (!$success)
         return false;
-    extract($theme_widget_args);
+    $before_widget = $theme_widget_args['before_widget'];
+    $before_title = $theme_widget_args['before_title'];
+    $after_title = $theme_widget_args['after_title'];
+    $after_widget = $theme_widget_args['after_widget'];
     $data = explode($after_widget, $content);
     $widgets = array();
     $heading = theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_widget_title_tag');

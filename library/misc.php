@@ -15,7 +15,7 @@ function theme_strpos($source, $target) {
 }
 
 function theme_get_array_value($arr = array(), $key = null, $def = false) {
-	if (is_array($arr) && @isset($arr[$key])) {
+	if (is_array($arr) && isset($arr[$key])) {
 		return $arr[$key];
 	}
 	return $def;
@@ -156,7 +156,7 @@ function theme_highlight_excerpt($search_query, $text) {
 	}
 
 	// If we didn't find anything, return the beginning.
-	if (sizeof($ranges) == 0)
+	if (count($ranges) == 0)
 		return '<p>' . _theme_text_truncate($text, 256) . '&nbsp;...</p>';
 
 	// Sort the text ranges by starting position.

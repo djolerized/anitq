@@ -2,9 +2,9 @@
 
 function theme_get_menu($args = '') {
 	$args = wp_parse_args($args, array('source' => 'Pages', 'depth' => 0, 'menu' => null, 'class' => ''));
-	$source = &$args['source'];
-	$menu = &$args['menu'];
-	$class = &$args['class'];
+	$source = $args['source'];
+	$menu = $args['menu'];
+	$class = $args['class'];
 	if ($menu != null && is_string($menu)) { // theme location
 		$location = theme_get_array_value(get_nav_menu_locations(), $menu);
 		if ($location) {
@@ -12,6 +12,9 @@ function theme_get_menu($args = '') {
 			if ($menu) {
 				$source = 'Custom Menu';
 				$class = implode(' ', array($class, 'menu-' . $menu->term_id));
+				$args['source'] = $source;
+				$args['menu'] = $menu;
+				$args['class'] = $class;
 			}
 		}
 	}
@@ -104,7 +107,7 @@ function theme_get_list_menu($args = array()) {
 
 function theme_get_list_pages($args = array()) {
 	global $wp_query;
-	$pages = &get_pages($args);
+	$pages = get_pages($args);
 	if (empty($pages))
 		return '';
 
@@ -192,7 +195,7 @@ function theme_get_list_pages($args = array()) {
 
 function theme_get_list_categories($args = array()) {
 	global $wp_query, $post;
-	$categories = &get_categories($args);
+	$categories = get_categories($args);
 	if (empty($categories))
 		return '';
 	$IdToKey = array();
@@ -244,13 +247,13 @@ function theme_get_category_branch($id, $categories, $IdToKey) {
 
 class theme_MenuItem {
 
-	var $id;
-	var $active;
-	var $parent;
-	var $attr;
-	var $title;
+	public $id;
+	public $active;
+	public $parent;
+	public $attr;
+	public $title;
 
-	function theme_MenuItem($args = '') {
+	function __construct($args = '') {
 		$args = wp_parse_args($args, array(
 			'id' => '',
 			'active' => false,
@@ -291,13 +294,13 @@ class theme_MenuItem {
 
 class theme_MenuWalker {
 
-	var $child_Ids = array();
-	var $IdToKey = array();
-	var $level = 0;
-	var $items;
-	var $depth;
-	var $args;
-	var $class;
+	public $child_Ids = array();
+	public $IdToKey = array();
+	public $level = 0;
+	public $items;
+	public $depth;
+	public $args;
+	public $class;
 
 	function walk($items = array(), $args = '') {
 		$args = wp_parse_args($args, array('depth' => 0, 'class' => ''));
